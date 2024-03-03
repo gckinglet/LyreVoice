@@ -198,6 +198,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                            if let jsonResult = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any], let transcribedText = jsonResult["text"] as? String {
                                DispatchQueue.main.async {
                                    print("Transcription Success: \(transcribedText)")
+                                   self.insertTranscribedText(transcribedText)
                                }
                            } else {
                                print("Failed to decode JSON response")
@@ -212,5 +213,8 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                task.resume()
            }
 
-        
+    func insertTranscribedText(_ text: String) {
+           // Inserts the given text at the current insertion point.
+           (textDocumentProxy as UIKeyInput).insertText(text)
+       }
 }
