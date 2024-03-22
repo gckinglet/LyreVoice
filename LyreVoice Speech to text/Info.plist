@@ -21,6 +21,14 @@
 		<string>$(PRODUCT_MODULE_NAME).KeyboardViewController</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Access microphone to perform voice dictation</string>
+		<key>NSSpeechRecognitionUsageDescription</key>
+		<string>Access microphone to perform speech recongition</string>
 	</dict>
+    <!-- Add this key -->
+   <key>NSAppTransportSecurity</key>
+   <dict>
+       <key>NSAllowsArbitraryLoads</key>
+       <true/>
+   </dict>
 </dict>
 </plist>

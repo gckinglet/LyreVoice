@@ -15,14 +15,26 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     
     var audioRecorder: AVAudioRecorder?
     var audioFileURL: URL?
+    var heightConstraint: NSLayoutConstraint?
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
         
-        // Add custom view sizing constraints here
-        // Ensure that the view's height is about 1/4 of the screen height
-
+        // Calculate the maximum height as 30% of the screen height
+        let maxHeight = UIScreen.main.bounds.size.height * 0.3
+        
+        // Check if the height constraint already exists
+        if let constraint = heightConstraint {
+            // Constraint exists, just update the constant
+            constraint.constant = maxHeight
+        } else {
+            // Constraint does not exist, create and activate it
+            let newConstraint = view.heightAnchor.constraint(lessThanOrEqualToConstant: maxHeight)
+            newConstraint.isActive = true
+            heightConstraint = newConstraint // Keep a reference to the newly created constraint
+        }
     }
+
     
     override func viewDidLoad() {
            super.viewDidLoad()
@@ -104,7 +116,10 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     }
 
     func startRecording() {
-           AVAudioSession.sharedInstance().requestRecordPermission { granted in
+           AVAudioSession.sharedInstance().requestRecordPermission {  [weak self] granted in
+               guard let self = self else {
+                   return
+               }
                if granted {
                    do {
                        try AVAudioSession.sharedInstance().setCategory(.record, mode: .default)
@@ -116,7 +131,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                        
                        let settings = [
                            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                           AVSampleRateKey: 12000,
+                           AVSampleRateKey: 48000,
                            AVNumberOfChannelsKey: 1,
                            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
                        ]
