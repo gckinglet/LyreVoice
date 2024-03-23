@@ -4,5 +4,13 @@
 <dict>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Access microphone to perform voice dictation</string>
+	<key>RequestsOpenAccess</key>
+	<string>YES</string>
 </dict>
 </plist>

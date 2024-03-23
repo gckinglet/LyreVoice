@@ -16,20 +16,21 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     var audioRecorder: AVAudioRecorder?
     var audioFileURL: URL?
     var heightConstraint: NSLayoutConstraint?
+    var fileName: String?
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
-        
-        // Calculate the maximum height as 30% of the screen height
-        let maxHeight = UIScreen.main.bounds.size.height * 0.3
-        
+
+        // Calculate the desired height as half of the standard keyboard height
+        let desiredHeight: CGFloat = 108 // Standard keyboard height is around 432 points
+
         // Check if the height constraint already exists
         if let constraint = heightConstraint {
             // Constraint exists, just update the constant
-            constraint.constant = maxHeight
+            constraint.constant = desiredHeight
         } else {
             // Constraint does not exist, create and activate it
-            let newConstraint = view.heightAnchor.constraint(lessThanOrEqualToConstant: maxHeight)
+            let newConstraint = view.heightAnchor.constraint(equalToConstant: desiredHeight)
             newConstraint.isActive = true
             heightConstraint = newConstraint // Keep a reference to the newly created constraint
         }
@@ -118,27 +119,29 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     func startRecording() {
            AVAudioSession.sharedInstance().requestRecordPermission {  [weak self] granted in
                guard let self = self else {
+                   print("permission is not granted")
                    return
                }
                if granted {
+                   print("recording permission granted")
                    do {
                        try AVAudioSession.sharedInstance().setCategory(.record, mode: .default)
                        try AVAudioSession.sharedInstance().setActive(true)
-                       
+                       //let tempDirectoryURL = FileManager.default.temporaryDirectory
                        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-                       let fileName = "audioRecording.m4a"
-                       self.audioFileURL = paths[0].appendingPathComponent(fileName)
+                       self.fileName = "\(UUID().uuidString).wav" // Generate a unique file nam
+                       self.audioFileURL = paths[0].appendingPathComponent(self.fileName!)
                        
                        let settings = [
-                           AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                           AVSampleRateKey: 48000,
-                           AVNumberOfChannelsKey: 1,
-                           AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                           AVFormatIDKey: kAudioFormatLinearPCM,
+                           AVSampleRateKey: 16000,
+                           AVNumberOfChannelsKey: 1
                        ]
                        
                        self.audioRecorder = try AVAudioRecorder(url: self.audioFileURL!, settings: settings)
                        self.audioRecorder?.delegate = self
                        self.audioRecorder?.record()
+                       print("Audio recording started at: \(Date())")
                    } catch {
                        print("Failed to start recording: \(error)")
                    }
@@ -151,10 +154,32 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
        func stopRecording() {
            audioRecorder?.stop()
            try? AVAudioSession.sharedInstance().setActive(false)
+           print("Audio recording stopped at: \(Date())")
+           // Print audio file size after recording
+           if let audioFileURL = self.audioFileURL,
+              let audioFileAttributes = try? FileManager.default.attributesOfItem(atPath: audioFileURL.path) {
+               let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
+               print("Audio file size after recording: \(audioFileSize) bytes")
+           } else {
+               print("Failed to get audio file size after recording")
+           }
        }
        
        func convertRecordingToText() {
+           print("convert recording to text")
            guard let audioFileURL = self.audioFileURL else { return }
+           
+           
+           // Print audio file size before sending
+           if let audioFileAttributes = try? FileManager.default.attributesOfItem(atPath: audioFileURL.path) {
+               let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
+               let audioFileModificationDate = audioFileAttributes[FileAttributeKey.modificationDate] as? Date ?? Date()
+               print("Audio file size before sending: \(audioFileSize) bytes")
+               print("Audio file modification timestamp: \(audioFileModificationDate)")
+           } else {
+               print("Failed to get audio file size before sending")
+           }
+           
                // Create the URL for the POST request
                let url = URL(string: "https://l0v1ghq9z0.execute-api.us-east-1.amazonaws.com/dev/v1/audio/transcriptions")!
                var request = URLRequest(url: url)
@@ -175,10 +200,11 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                    
                // Append audio file
                append("--\(boundary)\r\n")
-               append("Content-Disposition: form-data; name=\"file\"; filename=\"audioRecording.m4a\"\r\n")
-               append("Content-Type: audio/m4a\r\n\r\n")
+               append("Content-Disposition: form-data; name=\"file\"; filename=\"\(fileName)\"\r\n")
+               append("Content-Type: audio/wav\r\n\r\n")
                do {
                    let audioData = try Data(contentsOf: audioFileURL)
+                   print("Audio data size before appending to HTTP body: \(audioData.count) bytes")
                    data.append(audioData)
                    append("\r\n")
                } catch {
@@ -193,7 +219,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                
                append("--\(boundary)\r\n")
                append("Content-Disposition: form-data; name=\"prompt\"\r\n\r\n")
-               append("你好, 欢迎你来. 我同时讲中文和English.\r\n")
+               append("你好, 我会在一句话里同时用中文和English. Please transcribe audio to the original languages 并加上标点符号. \r\n")
                
                // End of multipart/form-data
                append("--\(boundary)--\r\n")

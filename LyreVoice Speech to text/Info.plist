@@ -23,12 +23,15 @@
 		<string>Access microphone to perform voice dictation</string>
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>Access microphone to perform speech recongition</string>
+		<key>UIFileSharingEnabled</key>
+		<string>YES</string>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<string>YES</string>
 	</dict>
-    <!-- Add this key -->
-   <key>NSAppTransportSecurity</key>
-   <dict>
-       <key>NSAllowsArbitraryLoads</key>
-       <true/>
-   </dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
