@@ -10,7 +10,7 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Access microphone to perform voice dictation</string>
-	<key>RequestsOpenAccess</key>
-	<string>YES</string>
+	<key></key>
+	<string></string>
 </dict>
 </plist>

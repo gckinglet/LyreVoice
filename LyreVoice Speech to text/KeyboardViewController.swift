@@ -138,6 +138,9 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                            AVNumberOfChannelsKey: 1
                        ]
                        
+                       print("Audio file path: \(self.audioFileURL!)")
+                       print("Audio file directory exists: \(FileManager.default.fileExists(atPath: self.audioFileURL!.deletingLastPathComponent().path))")
+
                        self.audioRecorder = try AVAudioRecorder(url: self.audioFileURL!, settings: settings)
                        self.audioRecorder?.delegate = self
                        self.audioRecorder?.record()
@@ -159,7 +162,21 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
            if let audioFileURL = self.audioFileURL,
               let audioFileAttributes = try? FileManager.default.attributesOfItem(atPath: audioFileURL.path) {
                let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
+               print("Audio file exists after recording: \(FileManager.default.fileExists(atPath: audioFileURL.path))")
                print("Audio file size after recording: \(audioFileSize) bytes")
+               
+               // Print the contents of the documents directory
+               let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+               do {
+                   let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsURL!, includingPropertiesForKeys: nil)
+                   print("Documents directory contents:")
+                   for fileURL in fileURLs {
+                       print(fileURL.lastPathComponent)
+                   }
+               } catch {
+                   print("Error retrieving contents of documents directory: \(error)")
+               }
+               
            } else {
                print("Failed to get audio file size after recording")
            }

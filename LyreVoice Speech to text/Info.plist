@@ -21,12 +21,6 @@
 		<string>$(PRODUCT_MODULE_NAME).KeyboardViewController</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Access microphone to perform voice dictation</string>
-		<key>NSSpeechRecognitionUsageDescription</key>
-		<string>Access microphone to perform speech recongition</string>
-		<key>UIFileSharingEnabled</key>
-		<string>YES</string>
-		<key>LSSupportsOpeningDocumentsInPlace</key>
-		<string>YES</string>
 	</dict>
 	<key>NSAppTransportSecurity</key>
 	<dict>
