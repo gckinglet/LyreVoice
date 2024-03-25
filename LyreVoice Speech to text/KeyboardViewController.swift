@@ -129,7 +129,8 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                        try AVAudioSession.sharedInstance().setActive(true)
                        //let tempDirectoryURL = FileManager.default.temporaryDirectory
                        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-                       self.fileName = "\(UUID().uuidString).wav" // Generate a unique file nam
+                       //self.fileName = "\(UUID().uuidString).wav" // Generate a unique file nam
+                       self.fileName = "audiofile.wav" // fixed file name to test aws s3 upload using presigned url
                        self.audioFileURL = paths[0].appendingPathComponent(self.fileName!)
                        
                        let settings = [
@@ -164,7 +165,9 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
                print("Audio file exists after recording: \(FileManager.default.fileExists(atPath: audioFileURL.path))")
                print("Audio file size after recording: \(audioFileSize) bytes")
-               
+               if let presign = URL(string: "https://lyrevoice.s3.amazonaws.com/audiofile.wav?AWSAccessKeyId=AKIAZR7ZZFKMXT74WF63&Signature=TcvIW6I0IgrwIijFYqaZmN%2Fo%2FKw%3D&Expires=1711333444"){
+                   uploadRecordingToS3(audioFileURL: audioFileURL, presignedUrl: presign)
+               }
                // Print the contents of the documents directory
                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
                do {
@@ -275,4 +278,21 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
            // Inserts the given text at the current insertion point.
            (textDocumentProxy as UIKeyInput).insertText(text)
        }
+    
+    func uploadRecordingToS3(audioFileURL: URL, presignedUrl: URL) {
+        var request = URLRequest(url: presignedUrl)
+        request.httpMethod = "PUT"
+        request.addValue("audio/wav", forHTTPHeaderField: "Content-Type")
+
+            let task = URLSession.shared.uploadTask(with: request, fromFile: audioFileURL) { data, response, error in
+                guard let httpResponse = response as? HTTPURLResponse,
+                      (200...299).contains(httpResponse.statusCode) else {
+                    print("Error uploading file: \(error?.localizedDescription ?? "No error description")")
+                    return
+                }
+                print("File uploaded successfully")
+            }
+            task.resume()
+    }
+
 }
