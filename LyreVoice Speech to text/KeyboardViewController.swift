@@ -165,9 +165,10 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
                print("Audio file exists after recording: \(FileManager.default.fileExists(atPath: audioFileURL.path))")
                print("Audio file size after recording: \(audioFileSize) bytes")
-               if let presign = URL(string: "https://lyrevoice.s3.amazonaws.com/audiofile.wav?AWSAccessKeyId=AKIAZR7ZZFKMXT74WF63&Signature=TcvIW6I0IgrwIijFYqaZmN%2Fo%2FKw%3D&Expires=1711333444"){
-                   uploadRecordingToS3(audioFileURL: audioFileURL, presignedUrl: presign)
-               }
+               let presign = "https://lyrevoice.s3.amazonaws.com/audiofile.wav?AWSAccessKeyId=AKIAZR7ZZFKMXT74WF63&Signature=LsRwFVKbj4xs0xfxZb6%2Bz5ZHlSQ%3D&Expires=1711490512"
+               
+                uploadRecordingToS3(audioFileURL: audioFileURL, presignedUrl: presign)
+
                // Print the contents of the documents directory
                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
                do {
@@ -279,20 +280,39 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
            (textDocumentProxy as UIKeyInput).insertText(text)
        }
     
-    func uploadRecordingToS3(audioFileURL: URL, presignedUrl: URL) {
-        var request = URLRequest(url: presignedUrl)
+    func uploadRecordingToS3(audioFileURL: URL, presignedUrl: String) {
+        guard let url = URL(string: presignedUrl) else {
+            print("Invalid presigned URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
         request.httpMethod = "PUT"
-        request.addValue("audio/wav", forHTTPHeaderField: "Content-Type")
-
-            let task = URLSession.shared.uploadTask(with: request, fromFile: audioFileURL) { data, response, error in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode) else {
-                    print("Error uploading file: \(error?.localizedDescription ?? "No error description")")
+        
+        do {
+            let audioData = try Data(contentsOf: audioFileURL)
+            
+            let task = URLSession.shared.uploadTask(with: request, from: audioData) { data, response, error in
+                if let error = error {
+                    print("Error uploading file: \(error.localizedDescription)")
                     return
                 }
-                print("File uploaded successfully")
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    if (200...299).contains(httpResponse.statusCode) {
+                        print("File uploaded successfully")
+                    } else {
+                        print("Server Error: \(httpResponse.statusCode)")
+                        if let responseData = data, let responseString = String(data: responseData, encoding: .utf8) {
+                            print("Response: \(responseString)")
+                        }
+                    }
+                }
             }
             task.resume()
+        } catch {
+            print("Error reading audio file: \(error.localizedDescription)")
+        }
     }
 
 }
