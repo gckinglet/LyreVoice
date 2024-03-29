@@ -17,6 +17,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     var audioFileURL: URL?
     var heightConstraint: NSLayoutConstraint?
     var fileName: String?
+    var recordingStartTime: Date?
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
@@ -125,7 +126,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                if granted {
                    print("recording permission granted")
                    do {
-                       try AVAudioSession.sharedInstance().setCategory(.record, mode: .default)
+                       try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
                        try AVAudioSession.sharedInstance().setActive(true)
                        //let tempDirectoryURL = FileManager.default.temporaryDirectory
                        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -133,20 +134,33 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                        self.fileName = "audiofile.wav" // fixed file name to test aws s3 upload using presigned url
                        self.audioFileURL = paths[0].appendingPathComponent(self.fileName!)
                        
-                       let settings = [
-                           AVFormatIDKey: kAudioFormatLinearPCM,
-                           AVSampleRateKey: 16000,
-                           AVNumberOfChannelsKey: 1
-                       ]
+                       let settings: [String: Any] = [
+                                           AVFormatIDKey: kAudioFormatLinearPCM,
+                                           AVSampleRateKey: 44100,
+                                           AVNumberOfChannelsKey: 1,
+                                           AVLinearPCMBitDepthKey: 16,
+                                           AVLinearPCMIsBigEndianKey: false,
+                                           AVLinearPCMIsFloatKey: false,
+                                           AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                                       ]
                        
                        print("Audio file path: \(self.audioFileURL!)")
                        print("Audio file directory exists: \(FileManager.default.fileExists(atPath: self.audioFileURL!.deletingLastPathComponent().path))")
 
                        self.audioRecorder = try AVAudioRecorder(url: self.audioFileURL!, settings: settings)
                        self.audioRecorder?.delegate = self
-                       self.audioRecorder?.record()
-                       print("Audio recording started at: \(Date())")
-                   } catch {
+                       self.recordingStartTime = Date()
+                       if self.audioRecorder?.prepareToRecord() == true {
+                           //let duration: TimeInterval = 30.0 // Recording duration in seconds
+                           if self.audioRecorder?.record() == true {
+                               print("Audio recording started at: \(self.recordingStartTime ?? Date())")
+                           } else {
+                               print("Failed to start audio recording")
+                           }
+                        } else {
+                                          print("Failed to prepare audio recorder")
+                                      }
+                    } catch {
                        print("Failed to start recording: \(error)")
                    }
                } else {
@@ -165,7 +179,7 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
                let audioFileSize = audioFileAttributes[FileAttributeKey.size] as? Int64 ?? 0
                print("Audio file exists after recording: \(FileManager.default.fileExists(atPath: audioFileURL.path))")
                print("Audio file size after recording: \(audioFileSize) bytes")
-               let presign = "https://lyrevoice.s3.amazonaws.com/audiofile.wav?AWSAccessKeyId=AKIAZR7ZZFKMXT74WF63&Signature=LsRwFVKbj4xs0xfxZb6%2Bz5ZHlSQ%3D&Expires=1711490512"
+               let presign = "https://lyrevoice.s3.amazonaws.com/audiofile.wav?AWSAccessKeyId=AKIAZR7ZZFKMXT74WF63&Signature=dAh%2FfJjpD8zRq6gzdmyNN8WRMkI%3D&Expires=1712279155"
                
                 uploadRecordingToS3(audioFileURL: audioFileURL, presignedUrl: presign)
 
@@ -186,10 +200,36 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
            }
        }
        
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+            print("Audio recording finished. Success: \(flag)")
+            if let audioFileURL = self.audioFileURL {
+                // ...
+                
+                // Get the recorded audio duration
+                let duration = recorder.currentTime
+                print("Recorded audio duration: \(duration) seconds")
+                
+                // Compare the recorded duration with the expected duration
+                if let startTimestamp = self.recordingStartTime {
+                    let stopTimestamp = Date()
+                    let expectedDuration = stopTimestamp.timeIntervalSince(startTimestamp)
+                    print("Expected audio duration: \(expectedDuration) seconds")
+                    
+                    if abs(duration - expectedDuration) > 1.0 {
+                        print("Warning: Recorded audio duration differs significantly from the expected duration")
+                    }
+                } else {
+                    print("Recording start timestamp not available")
+                }
+            }
+        }
+    
        func convertRecordingToText() {
            print("convert recording to text")
-           guard let audioFileURL = self.audioFileURL else { return }
-           
+           guard let audioFileURL = self.audioFileURL else {
+               print("Audio file URL is nil")
+               return
+           }
            
            // Print audio file size before sending
            if let audioFileAttributes = try? FileManager.default.attributesOfItem(atPath: audioFileURL.path) {
@@ -314,5 +354,18 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
             print("Error reading audio file: \(error.localizedDescription)")
         }
     }
+    
+        func audioRecorderEncodeErrorDidOccur(_ recorder: AVAudioRecorder, error: Error?) {
+            if let error = error {
+                print("Audio recording encode error occurred: \(error.localizedDescription)")
+            } else {
+                print("Audio recording encode error occurred without specific error details")
+            }
+            
+            // Handle the encode error (e.g., stop recording, display an error message, etc.)
+            stopRecording()
+            // Display an error message to the user or perform any necessary error handling
+        }
+        
 
 }
