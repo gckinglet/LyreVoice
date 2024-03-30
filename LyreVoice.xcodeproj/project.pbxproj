@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		7728D3F92B93B8ED0084E4A8 /* LyreVoiceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728D3F82B93B8ED0084E4A8 /* LyreVoiceApp.swift */; };
-		7728D3FB2B93B8ED0084E4A8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728D3FA2B93B8ED0084E4A8 /* ContentView.swift */; };
 		7728D3FD2B93B8EE0084E4A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7728D3FC2B93B8EE0084E4A8 /* Assets.xcassets */; };
 		7728D4002B93B8EE0084E4A8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7728D3FF2B93B8EE0084E4A8 /* Preview Assets.xcassets */; };
 		7728D40D2B93B9780084E4A8 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728D40C2B93B9780084E4A8 /* KeyboardViewController.swift */; };
 		7728D4112B93B9780084E4A8 /* LyreVoice Speech to text.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7728D40A2B93B9780084E4A8 /* LyreVoice Speech to text.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		77B0DD572BB8B1090087D5E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */; };
 		77C376C52B93F02C00FC8ACE /* ExtensionAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77C376C42B93F02C00FC8ACE /* ExtensionAssets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -43,13 +43,15 @@
 /* Begin PBXFileReference section */
 		7728D3F52B93B8ED0084E4A8 /* LyreVoice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LyreVoice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7728D3F82B93B8ED0084E4A8 /* LyreVoiceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyreVoiceApp.swift; sourceTree = "<group>"; };
-		7728D3FA2B93B8ED0084E4A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7728D3FC2B93B8EE0084E4A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7728D3FF2B93B8EE0084E4A8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7728D40A2B93B9780084E4A8 /* LyreVoice Speech to text.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "LyreVoice Speech to text.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7728D40C2B93B9780084E4A8 /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		7728D40E2B93B9780084E4A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		77758A222B9AAFE80041805B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		779A71572BB86B3A007A8EDB /* LyreVoice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LyreVoice.entitlements; sourceTree = "<group>"; };
+		779A71582BB86B76007A8EDB /* LyreVoice Speech to text.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LyreVoice Speech to text.entitlements"; sourceTree = "<group>"; };
+		77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		77C376C42B93F02C00FC8ACE /* ExtensionAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ExtensionAssets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,11 +94,12 @@
 		7728D3F72B93B8ED0084E4A8 /* LyreVoice */ = {
 			isa = PBXGroup;
 			children = (
+				779A71572BB86B3A007A8EDB /* LyreVoice.entitlements */,
 				77758A222B9AAFE80041805B /* Info.plist */,
 				7728D3F82B93B8ED0084E4A8 /* LyreVoiceApp.swift */,
-				7728D3FA2B93B8ED0084E4A8 /* ContentView.swift */,
 				7728D3FC2B93B8EE0084E4A8 /* Assets.xcassets */,
 				7728D3FE2B93B8EE0084E4A8 /* Preview Content */,
+				77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */,
 			);
 			path = LyreVoice;
 			sourceTree = "<group>";
@@ -112,6 +115,7 @@
 		7728D40B2B93B9780084E4A8 /* LyreVoice Speech to text */ = {
 			isa = PBXGroup;
 			children = (
+				779A71582BB86B76007A8EDB /* LyreVoice Speech to text.entitlements */,
 				7728D40C2B93B9780084E4A8 /* KeyboardViewController.swift */,
 				7728D40E2B93B9780084E4A8 /* Info.plist */,
 				77C376C42B93F02C00FC8ACE /* ExtensionAssets.xcassets */,
@@ -220,7 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7728D3FB2B93B8ED0084E4A8 /* ContentView.swift in Sources */,
+				77B0DD572BB8B1090087D5E6 /* AppDelegate.swift in Sources */,
 				7728D3F92B93B8ED0084E4A8 /* LyreVoiceApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +370,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LyreVoice/LyreVoice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -374,7 +379,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LyreVoice/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app requires microphone access to perform voice dictation";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access microphone to perform voice dictation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -400,6 +406,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LyreVoice/LyreVoice.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -408,7 +415,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LyreVoice/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "This app requires microphone access to perform voice dictation";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Access microphone to perform voice dictation";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -431,6 +439,7 @@
 		7728D4132B93B9780084E4A8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "LyreVoice Speech to text/LyreVoice Speech to text.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JPM8FZBQL8;
@@ -456,6 +465,7 @@
 		7728D4142B93B9780084E4A8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "LyreVoice Speech to text/LyreVoice Speech to text.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JPM8FZBQL8;

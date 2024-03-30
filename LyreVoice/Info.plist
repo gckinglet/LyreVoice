@@ -2,18 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.npcase.lyrevoice</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>LyreVoice</string>
+			</array>
+		</dict>
+	</array>
+	<key>RequestsOpenAccess</key>
+	<string>YES</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Access to microphone in order to perform speech to text transcription</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
-		<string>push-to-talk</string>
+		<string>voip</string>
 	</array>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Access microphone to perform voice dictation</string>
 </dict>
 </plist>
