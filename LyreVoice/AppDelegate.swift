@@ -2,8 +2,13 @@
 
 import UIKit
 import AVFoundation
+import SwiftUI
 
-@main
+
+// Define the notification names
+let startRecordingNotificationName = "com.npcase.lyrevoice.startRecording"
+let stopRecordingNotificationName = "com.npcase.lyrevoice.stopRecording"
+
 class AppDelegate: UIResponder, UIApplicationDelegate, AVAudioRecorderDelegate{
     
     var window: UIWindow?
@@ -14,96 +19,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AVAudioRecorderDelegate{
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        // Register for Darwin Notifications
+        registerForDarwinNotifications()
         return true
     }
+ 
     
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        // Print the received URL
-        print("Received URL: \(url)")
+    private func registerForDarwinNotifications() {
+        let startNotificationName = CFNotificationName("com.npcase.lyrevoice.startRecording" as CFString)
+        let stopNotificationName = CFNotificationName("com.npcase.lyrevoice.stopRecording" as CFString)
         
-        // Determine who sent the URL
-        if let sourceApplication = options[.sourceApplication] as? String {
-            print("Source application: \(sourceApplication)")
-        } else {
-            print("Source application not available")
-        }
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), Unmanaged.passUnretained(self).toOpaque(), AppDelegate.recordingCallback, startNotificationName.rawValue, nil, CFNotificationSuspensionBehavior.deliverImmediately)
         
-        // Check if the URL scheme matches your custom scheme
-        if url.scheme == "LyreVoice" {
-            // Handle the custom URL
-            if url.host == "recorder" {
-                if let query = url.query {
-                    print("URL query: \(query)")
-                    
-                    let components = query.components(separatedBy: "=")
-                    if components.count == 2 {
-                        let key = components[0]
-                        let value = components[1]
-                        
-                        print("Query key: \(key)")
-                        print("Query value: \(value)")
-                        
-                        if key == "recording" {
-                            if value == "start" {
-                                print("Starting background recording")
-                                startBackgroundRecording()
-                            } else if value == "stop" {
-                                print("Stopping background recording")
-                                stopBackgroundRecording()
-                                convertRecordingToText()
-                            } else {
-                                print("Invalid recording action")
-                            }
-                        } else {
-                            print("Invalid query key")
-                        }
-                    } else {
-                        print("Invalid query format")
-                    }
-                } else {
-                    print("URL query not available")
+        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), Unmanaged.passUnretained(self).toOpaque(), AppDelegate.recordingCallback, stopNotificationName.rawValue, nil, CFNotificationSuspensionBehavior.deliverImmediately)
+    }
+
+    static let recordingCallback: CFNotificationCallback = { center, observer, name, object, userInfo in
+        guard let observer = observer else { return }
+        
+        let instance = Unmanaged<AppDelegate>.fromOpaque(observer).takeUnretainedValue()
+        
+        DispatchQueue.main.async {
+            if let nameStr = name?.rawValue as String? {
+                print("Received notification: \(nameStr)") // Debug line to log the notification name
+                switch nameStr {
+                case startRecordingNotificationName:
+                    print("Starting background recording...")
+                    instance.startBackgroundRecording()
+                case stopRecordingNotificationName:
+                    print("Stopping background recording...")
+                    instance.stopBackgroundRecording()
+                default:
+                    print("Unknown notification received.")
                 }
-            } else if url.host == "activate" {
-                DispatchQueue.main.async {
-                    self.showActivationAlert()
-                }
-                return true
-            } else {
-                print("Invalid URL host")
             }
-            
-            return true
         }
-        
-        print("Unhandled URL scheme")
-        return false
     }
-    
-    private func showActivationAlert() {
-        guard let rootViewController = window?.rootViewController else {
-            print("RootViewController not found.")
-            return
-        }
-
-        let alert = UIAlertController(title: "Microphone Access Needed",
-                                      message: "Due to iOS constraints, LyreVoice app has to run in the background in order to access the microphone. Click okay to allow LyreVoice to access the microphone in the background.",
-                                      preferredStyle: .alert)
-        
-        let okayAction = UIAlertAction(title: "Okay", style: .default) { _ in
-            // Start recording as per your app's functionality
-            self.startBackgroundRecording()
-
-            // Switch back to the keyboard extension or the previous app
-            // Note: iOS does not allow programmatically switching to another app without user interaction.
-            // This step assumes the user navigates back or you have a specific method in place.
-        }
-        
-        alert.addAction(okayAction)
-        rootViewController.present(alert, animated: true, completion: nil)
-    }
-
     
     func startBackgroundRecording() {
+        print("startBackgroundRecording() called.") // Additional debug line
         AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
             guard let self = self else { return }
             if granted {
@@ -147,6 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AVAudioRecorderDelegate{
     }
     
     func stopBackgroundRecording() {
+        print("stopBackgroundRecording() called.") 
         audioRecorder?.stop()
         try? AVAudioSession.sharedInstance().setActive(false)
         print("Audio recording stopped at: \(Date())")

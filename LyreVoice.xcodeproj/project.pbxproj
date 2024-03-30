@@ -13,6 +13,7 @@
 		7728D40D2B93B9780084E4A8 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7728D40C2B93B9780084E4A8 /* KeyboardViewController.swift */; };
 		7728D4112B93B9780084E4A8 /* LyreVoice Speech to text.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7728D40A2B93B9780084E4A8 /* LyreVoice Speech to text.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		77B0DD572BB8B1090087D5E6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */; };
+		77B0DD5B2BB8B88B0087D5E6 /* NotificationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B0DD5A2BB8B88B0087D5E6 /* NotificationState.swift */; };
 		77C376C52B93F02C00FC8ACE /* ExtensionAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77C376C42B93F02C00FC8ACE /* ExtensionAssets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 		779A71572BB86B3A007A8EDB /* LyreVoice.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LyreVoice.entitlements; sourceTree = "<group>"; };
 		779A71582BB86B76007A8EDB /* LyreVoice Speech to text.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "LyreVoice Speech to text.entitlements"; sourceTree = "<group>"; };
 		77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		77B0DD5A2BB8B88B0087D5E6 /* NotificationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationState.swift; sourceTree = "<group>"; };
 		77C376C42B93F02C00FC8ACE /* ExtensionAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ExtensionAssets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,6 +99,7 @@
 				779A71572BB86B3A007A8EDB /* LyreVoice.entitlements */,
 				77758A222B9AAFE80041805B /* Info.plist */,
 				7728D3F82B93B8ED0084E4A8 /* LyreVoiceApp.swift */,
+				77B0DD5A2BB8B88B0087D5E6 /* NotificationState.swift */,
 				7728D3FC2B93B8EE0084E4A8 /* Assets.xcassets */,
 				7728D3FE2B93B8EE0084E4A8 /* Preview Content */,
 				77B0DD562BB8B1090087D5E6 /* AppDelegate.swift */,
@@ -225,6 +228,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77B0DD572BB8B1090087D5E6 /* AppDelegate.swift in Sources */,
+				77B0DD5B2BB8B88B0087D5E6 /* NotificationState.swift in Sources */,
 				7728D3F92B93B8ED0084E4A8 /* LyreVoiceApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

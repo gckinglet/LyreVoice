@@ -107,41 +107,14 @@ class KeyboardViewController: UIInputViewController {
     }
     
     func startRecording() {
-        if isHostAppActive(){
-            print("host app is active")
-            var responder: UIResponder? = self
-            let url = URL(string: "LyreVoice://recorder?recording=start")!
-            
-            while responder != nil {
-                if let application = responder as? UIApplication {
-                    application.perform(#selector(UIApplication.open(_:options:completionHandler:)), with: url, with: nil)
-                    return
-                }
-                responder = responder?.next
-            }
-
-        } else{
-            print("host app is inactive")
-            switchToHostAppForActivation()
-        }
-    }
-    
-    func switchToHostAppForActivation() {
-        // Example URL to open host app and show activation prompt
-        let url = URL(string: "LyreVoice://activate")!
-        var responder: UIResponder? = self
-        while responder != nil {
-            if let application = responder as? UIApplication {
-                application.perform(#selector(UIApplication.open(_:options:completionHandler:)), with: url, with: nil)
-                return
-            }
-            responder = responder?.next
-        }
+        let notificationName = "com.npcase.lyrevoice.startRecording"
+        CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFNotificationName(notificationName as CFString), nil, nil, true)
     }
     
     func stopRecording() {
-        let url = URL(string: "LyreVoice://recorder?recording=stop")!
-        extensionContext?.open(url, completionHandler: nil)
+        let notificationName = "com.npcase.lyrevoice.stopRecording"
+        CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFNotificationName(notificationName as CFString), nil, nil, true)
+
     }
     
     func insertTranscribedText(_ text: String) {
@@ -149,9 +122,5 @@ class KeyboardViewController: UIInputViewController {
         (textDocumentProxy as UIKeyInput).insertText(text)
     }
     
-    func isHostAppActive() -> Bool {
-        let sharedDefaults = UserDefaults(suiteName: "group.com.npcase.LyreVoice.sharedcontainer")
-        return sharedDefaults?.bool(forKey: "HostAppIsActive") ?? false
-    }
 
 }
