@@ -118,57 +118,58 @@ class KeyboardViewController: UIInputViewController, AVAudioRecorderDelegate {
     }
 
     func startRecording() {
-           AVAudioSession.sharedInstance().requestRecordPermission {  [weak self] granted in
-               guard let self = self else {
-                   print("permission is not granted")
-                   return
-               }
-               if granted {
-                   print("recording permission granted")
-                   do {
-                       try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
-                       try AVAudioSession.sharedInstance().setActive(true)
-                       //let tempDirectoryURL = FileManager.default.temporaryDirectory
-                       let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-                       //self.fileName = "\(UUID().uuidString).wav" // Generate a unique file nam
-                       self.fileName = "audiofile.wav" // fixed file name to test aws s3 upload using presigned url
-                       self.audioFileURL = paths[0].appendingPathComponent(self.fileName!)
-                       
-                       let settings: [String: Any] = [
-                                           AVFormatIDKey: kAudioFormatLinearPCM,
-                                           AVSampleRateKey: 44100,
-                                           AVNumberOfChannelsKey: 1,
-                                           AVLinearPCMBitDepthKey: 16,
-                                           AVLinearPCMIsBigEndianKey: false,
-                                           AVLinearPCMIsFloatKey: false,
-                                           AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-                                       ]
-                       
-                       print("Audio file path: \(self.audioFileURL!)")
-                       print("Audio file directory exists: \(FileManager.default.fileExists(atPath: self.audioFileURL!.deletingLastPathComponent().path))")
-
-                       self.audioRecorder = try AVAudioRecorder(url: self.audioFileURL!, settings: settings)
-                       self.audioRecorder?.delegate = self
-                       self.recordingStartTime = Date()
-                       if self.audioRecorder?.prepareToRecord() == true {
-                           //let duration: TimeInterval = 30.0 // Recording duration in seconds
-                           if self.audioRecorder?.record() == true {
-                               print("Audio recording started at: \(self.recordingStartTime ?? Date())")
-                           } else {
-                               print("Failed to start audio recording")
-                           }
+        AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
+            guard let self = self else {
+                print("Recording permission is not granted")
+                return
+            }
+            
+            if granted {
+                print("Recording permission granted")
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    try session.setCategory(.playAndRecord, mode: .spokenAudio, options: [.defaultToSpeaker, .allowBluetooth, .mixWithOthers, .allowAirPlay])
+                    try session.setActive(true)
+                    
+                    let tempDirectoryPath = NSTemporaryDirectory()
+                    let audioFileURL = URL(fileURLWithPath: tempDirectoryPath).appendingPathComponent(self.fileName ?? "audiofile.wav")
+                    self.audioFileURL = audioFileURL
+                    
+                    let settings: [String: Any] = [
+                        AVFormatIDKey: kAudioFormatLinearPCM,
+                        AVSampleRateKey: 44100,
+                        AVNumberOfChannelsKey: 1,
+                        AVLinearPCMBitDepthKey: 16,
+                        AVLinearPCMIsBigEndianKey: false,
+                        AVLinearPCMIsFloatKey: false,
+                        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                    ]
+                    
+                    print("Audio file path: \(audioFileURL)")
+                    print("Audio file directory exists: \(FileManager.default.fileExists(atPath: audioFileURL.deletingLastPathComponent().path))")
+                    
+                    self.audioRecorder = try AVAudioRecorder(url: audioFileURL, settings: settings)
+                    self.audioRecorder?.delegate = self
+                    self.recordingStartTime = Date()
+                    
+                    if self.audioRecorder?.prepareToRecord() == true {
+                        if self.audioRecorder?.record() == true {
+                            print("Audio recording started at: \(self.recordingStartTime ?? Date())")
                         } else {
-                                          print("Failed to prepare audio recorder")
-                                      }
-                    } catch {
-                       print("Failed to start recording: \(error)")
-                   }
-               } else {
-                   print("Permission to record was not granted")
-               }
-           }
-       }
-       
+                            print("Failed to start audio recording")
+                        }
+                    } else {
+                        print("Failed to prepare audio recorder")
+                    }
+                } catch {
+                    print("Failed to start recording: \(error)")
+                }
+            } else {
+                print("Permission to record was not granted")
+            }
+        }
+    }
+    
        func stopRecording() {
            audioRecorder?.stop()
            try? AVAudioSession.sharedInstance().setActive(false)
